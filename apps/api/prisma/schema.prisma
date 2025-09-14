@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  telegramId  String   @unique @map("telegram_id")
+  firstName   String?  @map("first_name")
+  lastName    String?  @map("last_name")
+  username    String?
+  photoUrl    String?  @map("photo_url")
+  name        String
+  phone       String?
+  language    String   @default("ru")
+  timezone    String   @default("Europe/Moscow")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  bookings Booking[]
+
+  @@map("users")
+}
+
+model Zone {
+  id          String  @id @default(cuid())
+  name        String  @unique // standard, vip, premium, ps5
+  displayName String  @map("display_name") // Standard, VIP, Premium, PlayStation 5
+  description String?
+  color       String  @default("#00E7D4")
+  active      Boolean @default(true)
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  pcs          PC[]
+  pricingRules PricingRule[]
+
+  @@map("zones")
+}
+
+model PC {
+  id       String    @id @default(cuid())
+  zoneId   String    @map("zone_id")
+  label    String    @unique // S-01, VIP-01, PR-01, PS5-01
+  specs    Json? // CPU, GPU, RAM, etc.
+  status   String    @default("ACTIVE")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  zone     Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@map("pcs")
+}
+
+model Booking {
+  id                  String   @id @default(cuid())
+  userId              String   @map("user_id")
+  pcId                String   @map("pc_id")
+  startTime           DateTime @map("start_time")
+  endTime             DateTime @map("end_time")
+  status              String   @default("ACTIVE")
+  totalPrice          Int      @map("total_price") // price in kopecks (rubles * 100)
+  additionalJoysticks Int      @default(0) @map("additional_joysticks")
+  notes               String?
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pc   PC   @relation(fields: [pcId], references: [id], onDelete: Cascade)
+
+  @@map("bookings")
+}
+
+model PricingRule {
+  id            String   @id @default(cuid())
+  zoneId        String   @map("zone_id")
+  type          String   @default("HOURLY")
+  name          String
+  weekdayPrice  Int      @map("weekday_price") // price in kopecks
+  weekendPrice  Int      @map("weekend_price") // price in kopecks
+  durationHours Int?     @map("duration_hours") // for packages
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  zone Zone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@map("pricing_rules")
+}
+
+model CalendarException {
+  id        String   @id @default(cuid())
+  date      DateTime @unique
+  type      String // "holiday", "weekend_override"
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("calendar_exceptions")
+}
+
+// Enums replaced with string constants for SQLite compatibility
+// PCStatus: "ACTIVE", "MAINTENANCE", "DISABLED"
+// BookingStatus: "ACTIVE", "CANCELLED", "COMPLETED", "NO_SHOW"  
+// PricingType: "HOURLY", "PACKAGE"
+// DayType: "WEEKDAY", "WEEKEND"
