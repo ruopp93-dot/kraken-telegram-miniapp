@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { format, addDays, startOfDay, addMinutes, isSameDay, isAfter } from 'date-fns'
+import { format, addDays, addMinutes, isSameDay } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import WebApp from '@twa-dev/sdk'
 
@@ -159,7 +159,7 @@ function TimeSlots() {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .section {
           margin-bottom: 32px;
         }

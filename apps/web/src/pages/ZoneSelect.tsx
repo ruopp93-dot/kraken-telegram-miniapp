@@ -96,7 +96,7 @@ function ZoneSelect() {
         </ul>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .zones-list {
           display: flex;
           flex-direction: column;

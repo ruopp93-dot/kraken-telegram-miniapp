@@ -129,7 +129,7 @@ function PcList() {
         ))}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .zone-summary {
           margin-bottom: 24px;
         }

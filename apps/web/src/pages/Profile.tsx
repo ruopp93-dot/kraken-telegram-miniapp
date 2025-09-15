@@ -40,7 +40,7 @@ function Profile() {
       'Отменить бронирование?',
       (confirmed) => {
         if (confirmed) {
-          WebApp.showAlert('Бронирование отменено')
+          WebApp.showAlert(`Бронирование ${bookingId} отменено`)
         }
       }
     )
@@ -191,7 +191,7 @@ function Profile() {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .user-info {
           display: flex;
           align-items: center;

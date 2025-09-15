@@ -83,7 +83,7 @@ function Home() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .home-header {
           text-align: center;
           margin-bottom: 32px;
